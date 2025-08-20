@@ -1,0 +1,5 @@
+xbbg
+pandas
+numpy
+yfinance
+matplotlib
