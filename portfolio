@@ -1,0 +1,32 @@
+import pandas as pd
+import yfinance as yf
+
+def build_esg_portfolio(esg_csv="../data/esg_scores.csv", min_score=70):
+    """
+    Screen companies by ESG score and build a portfolio.
+    """
+    # Load ESG data
+    esg = pd.read_csv(esg_csv)
+    esg = esg.dropna()
+
+    # Screen for high ESG score
+    filtered = esg[esg['ESG_DISCLOSURE_SCORE'] >= min_score]
+    tickers = [t.split()[0] for t in filtered['ticker']]  # remove "US Equity"
+    
+    # Fetch stock data
+    data = yf.download(tickers, period="1y")['Adj Close']
+    returns = data.pct_change().mean() * 252  # annualized returns
+    vol = data.pct_change().std() * (252 ** 0.5)  # annualized volatility
+
+    portfolio = pd.DataFrame({
+        "Ticker": tickers,
+        "ESG Score": filtered['ESG_DISCLOSURE_SCORE'].values,
+        "Return": returns.values,
+        "Volatility": vol.values
+    })
+
+    print("✅ Portfolio created:\n", portfolio)
+    return portfolio
+
+if __name__ == "__main__":
+    build_esg_portfolio()
