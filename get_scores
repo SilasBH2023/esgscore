@@ -1,0 +1,17 @@
+import pandas as pd
+from xbbg import blp
+
+def fetch_esg_scores(tickers, fields, save_path="../data/esg_scores.csv"):
+    """
+    Fetch ESG scores from Bloomberg API and save as CSV.
+    """
+    df = blp.bdp(tickers, fields)
+    df.to_csv(save_path)
+    print(f"✅ ESG scores saved to {save_path}")
+    return df
+
+if __name__ == "__main__":
+    tickers = ['AAPL US Equity', 'MSFT US Equity', 'TSLA US Equity', 'AMZN US Equity']
+    fields = ['ESG_DISCLOSURE_SCORE', 'ESG_SCORE_PEER']
+
+    fetch_esg_scores(tickers, fields)
