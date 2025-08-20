@@ -1,0 +1,22 @@
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+
+def fetch_sustainalytics_score(ticker):
+    url = f"https://www.sustainalytics.com/esg-ratings/{ticker}"
+    resp = requests.get(url)
+    # Parse score from HTML—example only!
+    soup = BeautifulSoup(resp.text, "html.parser")
+    score = soup.find("div", {"class": "esg-score"}).text
+    return float(score)
+
+tickers = ["AAPL", "MSFT", "TSLA"]
+scores = []
+for t in tickers:
+    try:
+        scores.append({"ticker": t, "score": fetch_sustainalytics_score(t)})
+    except Exception as e:
+        scores.append({"ticker": t, "score": None})
+df = pd.DataFrame(scores)
+df.to_csv("data/esg_sustainalytics.csv", index=False)
+print(df)
